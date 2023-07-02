@@ -199,36 +199,49 @@ function handleUserInput(event) {
     if (event.key === "ArrowUp" || event.key === "ArrowDown" || event.key === "ArrowLeft" || event.key === "ArrowRight") {
         moveNumbers(event.key.slice(5).toLowerCase());
     }
-    console.log(event);
-    if(event.touches >0){
-        const startX = event.touches[0].clientX;
-        const startY = event.touches[0].clientY;
-        const endX = event.changedTouches[0].clientX;
-        const endY = event.changedTouches[0].clientY;
-
-        const deltaX = endX - startX;
-        const deltaY = endY - startY;
-        console.log(startX,startY,endX,endY);
-        if (Math.abs(deltaX) > Math.abs(deltaY)) {
-            if (deltaX > 0) {
-                // Swipe right
-                moveNumbers("right");
-            } else {
-                moveNumbers("left");
-            }
-        } else {
-            if (deltaY > 0) {
-                moveNumbers("down");
-            } else {
-                moveNumbers("up");
-            }
-        }
-    }
+    //console.log(event);
 }
 
 
+let touchStartX, touchStartY;
+
+function handleTouchStart(event) {
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+}
+
+function handleTouchMove(event) {
+    if (!touchStartX || !touchStartY) {
+        return;
+    }
+
+    const touchEndX = event.touches[0].clientX;
+    const touchEndY = event.touches[0].clientY;
+
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    console.log(deltaX,deltaY);
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (deltaX > 0) {
+            moveNumbers("right");
+        } else {
+            moveNumbers("left");
+        }
+    } else {
+        if (deltaY > 0) {
+            moveNumbers("down");
+        } else {
+            moveNumbers("up");
+        }
+    }
+
+    touchStartX = null;
+    touchStartY = null;
+}
+
 document.addEventListener('keydown', handleUserInput);
-document.addEventListener('dragend', handleUserInput);
+document.addEventListener('touchstart', handleTouchStart);
+document.addEventListener('touchmove', handleTouchMove);
 displayGrid();
 
 
